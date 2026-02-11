@@ -554,6 +554,7 @@ body { background-color: #f7f9fc; }
     mix-blend-mode: multiply; /* Makes white background of logo transparent */
     background-color: transparent !important;
     border: none !important;
+    box-shadow: none !important; /* Remove any residual shadow */
 }
 .app-title { text-align: center; color: #1e3a8a; font-weight: 800; font-size: 2.5rem; margin-bottom: 5px; }
 .app-subtitle { text-align: center; color: #64748b; font-size: 1.1rem; margin-bottom: 30px; }
@@ -601,9 +602,9 @@ if __name__ == "__main__":
     print(f"[Gradio] Share mode: {should_share}")
     print(f"[Gradio] Starting server on 0.0.0.0:7860...")
     
-    # CSS moved to launch() for Gradio 6.0+ compatibility
-    # Disable debug for maximum stability on VPS
-    demo.launch(
+    # Enable queue for high-concurrency/heavy processing like Whisper
+    # This prevents timeouts on the VPS when multiple people use it
+    demo.queue().launch(
         share=should_share, 
         server_name="0.0.0.0", 
         server_port=7860,
@@ -611,4 +612,6 @@ if __name__ == "__main__":
         show_error=True,
         debug=False
     )
-    print("[Gradio] Server is UP!")
+    print("====================================")
+    print("🚀 KAWKAB AI IS FULLY READY ON VPS!")
+    print("====================================")
