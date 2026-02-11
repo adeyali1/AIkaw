@@ -545,14 +545,23 @@ body { background-color: #f7f9fc; }
 .gradio-container { max-width: 1000px !important; margin: 0 auto !important; font-family: 'Inter', 'Roboto', sans-serif !important; }
 .gr-button-primary { background: linear-gradient(135deg, #6e8efb, #a777e3) !important; border: none !important; border-radius: 8px !important; transition: transform 0.2s ease !important; }
 .gr-button-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4); }
-.header-logo { display: block; margin-left: auto; margin-right: auto; width: 150px; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px; }
+.header-logo { 
+    display: block; 
+    margin-left: auto; 
+    margin-right: auto; 
+    width: 150px; 
+    border-radius: 50%; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+    margin-bottom: 20px;
+    mix-blend-mode: multiply; /* Makes white background of logo transparent */
+}
 .app-title { text-align: center; color: #1e3a8a; font-weight: 800; font-size: 2.5rem; margin-bottom: 5px; }
 .app-subtitle { text-align: center; color: #64748b; font-size: 1.1rem; margin-bottom: 30px; }
 .analysis-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-top: 5px solid #6e8efb; }
 """
 
 # Gradio Interface
-with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", css=custom_css) as demo:
+with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة") as demo:
     with gr.Column(elem_id="header-container"):
         if os.path.exists("FinallLogo-02.avif"):
             gr.Image("FinallLogo-02.avif", elem_classes="header-logo", show_label=False, interactive=False, container=False)
@@ -581,5 +590,17 @@ with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", css=cus
     )
 
 if __name__ == "__main__":
-    # For VPS deployment, ensure share=False and server_name="0.0.0.0"
-    demo.launch(share=True, server_name="0.0.0.0")
+    # Check if running in Docker (Coolify) or local
+    is_docker = os.path.exists('/.dockerenv')
+    
+    # In VPS/Docker, we don't need share=True (Coolify provides the link)
+    # share=True on VPS often hangs because it tries to create a tunnel
+    should_share = not is_docker
+    
+    # CSS moved to launch() for Gradio 6.0+ compatibility
+    demo.launch(
+        share=should_share, 
+        server_name="0.0.0.0", 
+        server_port=7860,
+        css=custom_css
+    )
