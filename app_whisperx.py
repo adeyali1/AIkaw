@@ -581,37 +581,37 @@ body { background-color: #f7f9fc; font-family: 'Cairo', sans-serif !important; }
 /* Cards & Containers */
 .analysis-card, .json-card { 
     background: white; 
-    border-radius: 16px; 
-    padding: 30px; 
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); 
-    border: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-    animation: slideIn 0.8s ease-out;
+    border-radius: 20px; 
+    padding: 35px; 
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08); 
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    margin-bottom: 25px;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(10px);
 }
-.analysis-card { border-top: 5px solid #3b82f6; }
+.analysis-card { border-top: 5px solid #6366f1; }
 
 /* Animations */
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 body { 
-    background: linear-gradient(-45deg, #f7f9fc, #eef2ff, #e0e7ff, #f7f9fc);
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
+    background-color: #f8fafc;
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+    background-size: 100% 100%;
+    min-height: 100vh;
     font-family: 'Cairo', sans-serif !important; 
 }
 
 /* Text & Inputs */
 .prose { font-size: 1.1rem !important; line-height: 1.8 !important; }
-textarea { background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; }
+textarea { background-color: rgba(255,255,255,0.8) !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; transition: all 0.2s; }
+textarea:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important; }
 
 /* Loading Animation */
 .gr-button-primary.generating {
@@ -619,9 +619,9 @@ textarea { background-color: #f8fafc !important; border: 1px solid #e2e8f0 !impo
     animation: pulse 1.5s infinite;
 }
 @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(167, 119, 227, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(167, 119, 227, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(167, 119, 227, 0); }
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
 }
 /* Hide Download Button on Images */
 .header-logo .download { display: none !important; }
@@ -651,87 +651,92 @@ if os.path.exists("logo_b64.txt"):
 
 auth_html = f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
-body, .gradio-container {{ font-family: 'Cairo', sans-serif !important; background-color: #0f172a !important; color: white !important; overflow: hidden; }}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap');
 
-/* Animated Background (Subtle AI Particles) */
+/* Modern Reset & Base */
+body, .gradio-container {{ 
+    font-family: 'Cairo', sans-serif !important; 
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #0f172a; /* Dark fallback */
+}}
+
+/* Mesh Gradient Background */
 .gradio-container::before {{
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(15,23,42,0) 50%);
-    animation: rotate 20s linear infinite;
-    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 100%, hsla(225,39%,30%,1) 0, transparent 50%), 
+        radial-gradient(at 80% 0%, hsla(339,49%,30%,1) 0, transparent 50%),
+        radial-gradient(at 0% 50%, hsla(339,49%,30%,1) 0, transparent 50%),
+        radial-gradient(at 80% 50%, hsla(339,49%,30%,1) 0, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(339,49%,30%,1) 0, transparent 50%),
+        radial-gradient(at 80% 100%, hsla(339,49%,30%,1) 0, transparent 50%),
+        radial-gradient(at 0% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+    z-index: -2;
+    filter: blur(80px); /* Soft mesh effect */
+    opacity: 0.8;
 }}
-@keyframes rotate {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+
+/* Glassmorphism Card Container */
+/* We target the parent container of the form if possible, but mainly style our injected div */
+#login_container {{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    z-index: 100;
+}}
 
 #login_logo {{
-    display: block;
-    margin: 0 auto 20px auto;
-    width: 140px;
-    animation: float 3s ease-in-out infinite;
-    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5));
-    mix-blend-mode: normal !important; /* Reset blend for dark mode */
+    width: 100px;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
 }}
 
 .login_title {{
-    text-align: center;
-    color: #eff6ff;
-    font-weight: 800;
-    font-size: 2.5rem;
-    margin-bottom: 5px;
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
-    animation: glow 2s ease-in-out infinite alternate;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
 }}
 
 .login_subtitle {{
-    text-align: center;
     color: #94a3b8;
-    font-size: 1.1rem;
-    margin-bottom: 40px;
-    letter-spacing: 1px;
+    font-size: 14px;
+    margin-bottom: 30px;
 }}
 
-/* Button & Input Styling Override for Login */
-/* Note: Gradio login form styles are hard to override fully, but we try */
-
-@keyframes float {{
-    0% {{ transform: translateY(0px); }}
-    50% {{ transform: translateY(-10px); }}
-    100% {{ transform: translateY(0px); }}
-}}
-@keyframes glow {{
-    from {{ text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }}
-    to {{ text-shadow: 0 0 20px rgba(59, 130, 246, 0.9), 0 0 10px rgba(167, 119, 227, 0.6); }}
-}}
+/* Attempt to target Gradio's login form to center it inside our glass card logic */
+/* Note: This is tricky in Gradio, but we can make the page look cohesive */
 </style>
 
-<div style="text-align: center; position: relative; z-index: 10;">
-    <div style="font-size: 4rem; margin-bottom: 10px;">🪐</div>
-    <!-- Fallback emoji if image fails, placed above title -->
-    <div class="login_title">Kawkab AI</div>
-    <div class="login_subtitle">بوابة الذكاء الاصطناعي لفصاحة القراءة</div>
+<div id="login_container">
+    <img id="login_logo" src="data:image/avif;base64,{login_logo_b64}" alt="Kawkab AI Logo">
+    <div class="login_title">Welcome to Kawkab AI</div>
+    <div class="login_subtitle">Please sign in to continue</div>
+    <!-- Gradio's actual login form is rendered below this by default. 
+         We rely on the visual weight of this header to set the scene. -->
 </div>
-<!-- Injecting logo via JS to ensure it loads even with strict CSP if needed -->
-<script>
-    const logoBase64 = "data:image/avif;base64,{login_logo_b64}";
-    const img = document.createElement('img');
-    img.id = 'login_logo';
-    img.src = logoBase64;
-    img.alt = 'Kawkab AI Logo';
-    
-    // Insert image before the title
-    const title = document.querySelector('.login_title');
-    if(title) {{
-        title.parentNode.insertBefore(img, title);
-        // Remove emoji if image loads successfully (optional polish)
-        const emoji = title.previousElementSibling.previousElementSibling;
-        if(emoji && emoji.textContent === '🪐') emoji.style.display = 'none';
-    }}
-</script>
 """
 
 with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=theme, css=custom_css) as demo:
