@@ -1,0 +1,8 @@
+torch
+torchaudio
+transformers
+gradio
+numpy
+scipy
+imageio-ffmpeg
+git+https://github.com/m-bain/whisperx.git
