@@ -603,6 +603,8 @@ textarea { background-color: #f8fafc !important; border: 1px solid #e2e8f0 !impo
     70% { box-shadow: 0 0 0 10px rgba(167, 119, 227, 0); }
     100% { box-shadow: 0 0 0 0 rgba(167, 119, 227, 0); }
 }
+/* Hide Download Button on Images */
+.header-logo .download { display: none !important; }
 """
 
 # Gradio Interface - Theme: Soft Blue (Base)
@@ -674,8 +676,7 @@ with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=t
                 elem_classes="header-logo", 
                 show_label=False, 
                 interactive=False, 
-                container=False, 
-                show_download_button=False
+                container=False
             )
         gr.Markdown("# Kawkab AI", elem_classes="app-title")
         gr.Markdown("### تقييم فصاحة القراءة بالذكاء الاصطناعي", elem_classes="app-subtitle")
