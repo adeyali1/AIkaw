@@ -541,28 +541,72 @@ def analyze(audio):
 
 # Custom CSS for Premium Look
 custom_css = """
-body { background-color: #f7f9fc; }
-.gradio-container { max-width: 1000px !important; margin: 0 auto !important; font-family: 'Inter', 'Roboto', sans-serif !important; }
-.gr-button-primary { background: linear-gradient(135deg, #6e8efb, #a777e3) !important; border: none !important; border-radius: 8px !important; transition: transform 0.2s ease !important; }
-.gr-button-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4); }
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+
+body { background-color: #f7f9fc; font-family: 'Cairo', sans-serif !important; }
+.gradio-container { max-width: 1000px !important; margin: 0 auto !important; }
+
+/* Header & Logo */
 .header-logo { 
     display: block; 
     margin-left: auto; 
     margin-right: auto; 
-    width: 150px; 
-    margin-bottom: 20px;
-    mix-blend-mode: multiply; /* Makes white background of logo transparent */
+    width: 160px; 
+    margin-bottom: 25px;
+    mix-blend-mode: multiply; 
     background-color: transparent !important;
     border: none !important;
-    box-shadow: none !important; /* Remove any residual shadow */
+    box-shadow: none !important;
 }
-.app-title { text-align: center; color: #1e3a8a; font-weight: 800; font-size: 2.5rem; margin-bottom: 5px; }
-.app-subtitle { text-align: center; color: #64748b; font-size: 1.1rem; margin-bottom: 30px; }
-.analysis-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-top: 5px solid #6e8efb; }
+.app-title { text-align: center; color: #1e3a8a; font-weight: 800; font-size: 2.8rem !important; margin-bottom: 5px; letter-spacing: -0.5px; }
+.app-subtitle { text-align: center; color: #64748b; font-size: 1.2rem !important; margin-bottom: 40px; font-weight: 600; }
+
+/* Primary Button */
+.gr-button-primary { 
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important; 
+    border: none !important; 
+    border-radius: 10px !important; 
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    padding: 12px 24px !important;
+    transition: all 0.3s ease !important; 
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+}
+.gr-button-primary:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.6); 
+}
+
+/* Cards & Containers */
+.analysis-card, .json-card { 
+    background: white; 
+    border-radius: 16px; 
+    padding: 30px; 
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); 
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+.analysis-card { border-top: 5px solid #3b82f6; }
+
+/* Text & Inputs */
+.prose { font-size: 1.1rem !important; line-height: 1.8 !important; }
+textarea { background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; }
 """
 
-# Gradio Interface
-with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة") as demo:
+# Gradio Interface - Theme: Soft Blue (Base)
+theme = gr.themes.Soft(
+    primary_hue="blue",
+    secondary_hue="slate",
+    font=[gr.themes.GoogleFont("Cairo"), "sans-serif"]
+).set(
+    body_background_fill="#f7f9fc",
+    block_background_fill="white",
+    block_border_width="0px",
+    block_shadow="0 4px 6px -1px rgba(0,0,0,0.05)"
+)
+
+with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=theme) as demo:
     with gr.Column(elem_id="header-container"):
         if os.path.exists("FinallLogo-02.avif"):
             gr.Image("FinallLogo-02.avif", elem_classes="header-logo", show_label=False, interactive=False, container=False)
@@ -610,7 +654,8 @@ if __name__ == "__main__":
         server_port=7860,
         css=custom_css,
         show_error=True,
-        debug=False
+        debug=False,
+        auth=("kat", "Sinan@26")
     )
     print("====================================")
     print("🚀 KAWKAB AI IS FULLY READY ON VPS!")
