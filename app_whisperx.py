@@ -550,8 +550,6 @@ body { background-color: #f7f9fc; }
     margin-left: auto; 
     margin-right: auto; 
     width: 150px; 
-    border-radius: 50%; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
     margin-bottom: 20px;
     mix-blend-mode: multiply; /* Makes white background of logo transparent */
 }
@@ -590,17 +588,22 @@ with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة") as demo
     )
 
 if __name__ == "__main__":
-    # Check if running in Docker (Coolify) or local
-    is_docker = os.path.exists('/.dockerenv')
+    # More robust Docker/VPS detection
+    is_docker = os.path.exists('/.dockerenv') or os.path.exists('/proc/self/cgroup') and 'docker' in open('/proc/self/cgroup').read()
     
-    # In VPS/Docker, we don't need share=True (Coolify provides the link)
-    # share=True on VPS often hangs because it tries to create a tunnel
+    # In VPS/Docker, we MUST disable share=True (Coolify provides the link)
+    # Tunneling (share=True) often fails in locked VPS networks, causing "Bad Gateway"
     should_share = not is_docker
+    
+    print(f"[Gradio] Environment: {'Docker/VPS' if is_docker else 'Local'}")
+    print(f"[Gradio] Share mode: {should_share}")
+    print(f"[Gradio] Starting server on 0.0.0.0:7860...")
     
     # CSS moved to launch() for Gradio 6.0+ compatibility
     demo.launch(
         share=should_share, 
         server_name="0.0.0.0", 
         server_port=7860,
-        css=custom_css
+        css=custom_css,
+        show_error=True
     )
