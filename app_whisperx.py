@@ -9,6 +9,7 @@ import whisperx
 import gc
 import os
 import sys
+import base64
 
 # Windows UTF-8 fix
 if sys.platform == "win32":
@@ -543,41 +544,6 @@ def analyze(audio):
 custom_css = """
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
 
-body { background-color: #f7f9fc; font-family: 'Cairo', sans-serif !important; }
-.gradio-container { max-width: 1000px !important; margin: 0 auto !important; }
-
-/* Header & Logo */
-.header-logo { 
-    display: block; 
-    margin-left: auto; 
-    margin-right: auto; 
-    width: 160px; 
-    margin-bottom: 25px;
-    mix-blend-mode: multiply; 
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-.app-title { text-align: center; color: #1e3a8a; font-weight: 800; font-size: 2.8rem !important; margin-bottom: 5px; letter-spacing: -0.5px; }
-.app-subtitle { text-align: center; color: #64748b; font-size: 1.2rem !important; margin-bottom: 40px; font-weight: 600; }
-
-/* Primary Button */
-.gr-button-primary { 
-    background: linear-gradient(135deg, #3b82f6, #2563eb) !important; 
-    border: none !important; 
-    border-radius: 10px !important; 
-    color: white !important;
-    font-weight: 700 !important;
-    font-size: 1.1rem !important;
-    padding: 12px 24px !important;
-    transition: all 0.3s ease !important; 
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
-}
-.gr-button-primary:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.6); 
-}
-
 /* Cards & Containers */
 .analysis-card, .json-card { 
     background: white; 
@@ -601,11 +567,26 @@ body {
     background-color: #f8fafc;
     background-image: 
         radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-        radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 100%, hsla(225,39%,30%,1) 0, transparent 50%), 
         radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-    background-size: 100% 100%;
+    background-size: cover;
     min-height: 100vh;
     font-family: 'Cairo', sans-serif !important; 
+}
+
+/* Login Page Styling (Native Form Override) */
+.gradio-container {
+    font-family: 'Cairo', sans-serif !important;
+}
+
+/* We target the login form specifically if possible, but generally stylize the container */
+/* Note: Gradio's login page uses specific classes. We try to catch them here. */
+.svelte-1yyjkyg, .gradio-container.svelte-1yyjkyg { /* Common variable class names */
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* Text & Inputs */
@@ -639,103 +620,28 @@ theme = gr.themes.Soft(
     block_shadow="0 4px 6px -1px rgba(0,0,0,0.05)"
 )
 
-# Prepare Login Page HTML
-login_logo_b64 = ""
-if os.path.exists("logo_b64.txt"):
-    with open("logo_b64.txt", "r") as f:
-        # Strip PEM headers/footers if present
-        content = f.read()
-        content = content.replace("-----BEGIN CERTIFICATE-----", "")
-        content = content.replace("-----END CERTIFICATE-----", "")
-        login_logo_b64 = content.replace("\n", "").strip()
+# Prepare Login Page Logo
+def get_base64_logo():
+    logo_path = "FinallLogo-02.avif"
+    if os.path.exists(logo_path):
+        try:
+            with open(logo_path, "rb") as image_file:
+                return base64.b64encode(image_file.read()).decode('utf-8')
+        except Exception as e:
+            print(f"Error reading logo: {e}")
+            return ""
+    return ""
+
+login_logo_b64 = get_base64_logo()
 
 auth_html = f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap');
-
-/* Modern Reset & Base */
-body, .gradio-container {{ 
-    font-family: 'Cairo', sans-serif !important; 
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    background: #0f172a; /* Dark fallback */
-}}
-
-/* Mesh Gradient Background */
-.gradio-container::before {{
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-        radial-gradient(at 50% 100%, hsla(225,39%,30%,1) 0, transparent 50%), 
-        radial-gradient(at 80% 0%, hsla(339,49%,30%,1) 0, transparent 50%),
-        radial-gradient(at 0% 50%, hsla(339,49%,30%,1) 0, transparent 50%),
-        radial-gradient(at 80% 50%, hsla(339,49%,30%,1) 0, transparent 50%),
-        radial-gradient(at 0% 100%, hsla(339,49%,30%,1) 0, transparent 50%),
-        radial-gradient(at 80% 100%, hsla(339,49%,30%,1) 0, transparent 50%),
-        radial-gradient(at 0% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-    z-index: -2;
-    filter: blur(80px); /* Soft mesh effect */
-    opacity: 0.8;
-}}
-
-/* Glassmorphism Card Container */
-/* We target the parent container of the form if possible, but mainly style our injected div */
-#login_container {{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    text-align: center;
-    z-index: 100;
-}}
-
-#login_logo {{
-    width: 100px;
-    height: auto;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-}}
-
-.login_title {{
-    color: white;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
-}}
-
-.login_subtitle {{
-    color: #94a3b8;
-    font-size: 14px;
-    margin-bottom: 30px;
-}}
-
-/* Attempt to target Gradio's login form to center it inside our glass card logic */
-/* Note: This is tricky in Gradio, but we can make the page look cohesive */
 </style>
-
-<div id="login_container">
-    <img id="login_logo" src="data:image/avif;base64,{login_logo_b64}" alt="Kawkab AI Logo">
-    <div class="login_title">Welcome to Kawkab AI</div>
-    <div class="login_subtitle">Please sign in to continue</div>
-    <!-- Gradio's actual login form is rendered below this by default. 
-         We rely on the visual weight of this header to set the scene. -->
+<div style="text-align: center; margin-bottom: 20px;">
+    {'<img src="data:image/avif;base64,' + login_logo_b64 + '" style="width: 120px; height: auto; margin: 0 auto 10px auto; display: block; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));">' if login_logo_b64 else '<div style="font-size: 40px;">🪐</div>'}
+    <h1 style="color: white; font-family: 'Cairo', sans-serif; font-weight: 700; margin-bottom: 5px;">Kawkab AI</h1>
+    <p style="color: #94a3b8; font-family: 'Cairo', sans-serif; font-size: 14px;">Sign in to access the platform</p>
 </div>
 """
 
