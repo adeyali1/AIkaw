@@ -602,14 +602,13 @@ if __name__ == "__main__":
     print(f"[Gradio] Starting server on 0.0.0.0:7860...")
     
     # CSS moved to launch() for Gradio 6.0+ compatibility
-    # Disable analytics and debug for maximum stability on VPS
+    # Disable debug for maximum stability on VPS
     demo.launch(
         share=should_share, 
         server_name="0.0.0.0", 
         server_port=7860,
         css=custom_css,
         show_error=True,
-        debug=False,
-        analytics_enabled=False
+        debug=False
     )
     print("[Gradio] Server is UP!")
