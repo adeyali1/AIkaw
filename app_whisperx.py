@@ -586,8 +586,28 @@ body { background-color: #f7f9fc; font-family: 'Cairo', sans-serif !important; }
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); 
     border: 1px solid #e2e8f0;
     margin-bottom: 20px;
+    animation: slideIn 0.8s ease-out;
 }
 .analysis-card { border-top: 5px solid #3b82f6; }
+
+/* Animations */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body { 
+    background: linear-gradient(-45deg, #f7f9fc, #eef2ff, #e0e7ff, #f7f9fc);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    font-family: 'Cairo', sans-serif !important; 
+}
 
 /* Text & Inputs */
 .prose { font-size: 1.1rem !important; line-height: 1.8 !important; }
@@ -623,49 +643,95 @@ theme = gr.themes.Soft(
 login_logo_b64 = ""
 if os.path.exists("logo_b64.txt"):
     with open("logo_b64.txt", "r") as f:
-        login_logo_b64 = f.read().replace("\n", "")
+        # Strip PEM headers/footers if present
+        content = f.read()
+        content = content.replace("-----BEGIN CERTIFICATE-----", "")
+        content = content.replace("-----END CERTIFICATE-----", "")
+        login_logo_b64 = content.replace("\n", "").strip()
 
 auth_html = f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
-.gradio-container {{ font-family: 'Cairo', sans-serif !important; background-color: #f7f9fc !important; }}
+body, .gradio-container {{ font-family: 'Cairo', sans-serif !important; background-color: #0f172a !important; color: white !important; overflow: hidden; }}
+
+/* Animated Background (Subtle AI Particles) */
+.gradio-container::before {{
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(15,23,42,0) 50%);
+    animation: rotate 20s linear infinite;
+    z-index: -1;
+}}
+@keyframes rotate {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+
 #login_logo {{
     display: block;
     margin: 0 auto 20px auto;
-    width: 120px;
-    animation: fadeInDown 1s ease-out;
-    mix-blend-mode: multiply;
+    width: 140px;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5));
+    mix-blend-mode: normal !important; /* Reset blend for dark mode */
 }}
+
 .login_title {{
     text-align: center;
-    color: #1e3a8a;
+    color: #eff6ff;
     font-weight: 800;
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 5px;
-    animation: fadeInUp 1s ease-out;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+    animation: glow 2s ease-in-out infinite alternate;
 }}
+
 .login_subtitle {{
     text-align: center;
-    color: #64748b;
-    font-size: 1rem;
-    margin-bottom: 30px;
-    animation: fadeInUp 1s ease-out 0.3s forwards;
-    opacity: 0;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
 }}
-@keyframes fadeInDown {{
-    from {{ opacity: 0; transform: translateY(-20px); }}
-    to {{ opacity: 1; transform: translateY(0); }}
+
+/* Button & Input Styling Override for Login */
+/* Note: Gradio login form styles are hard to override fully, but we try */
+
+@keyframes float {{
+    0% {{ transform: translateY(0px); }}
+    50% {{ transform: translateY(-10px); }}
+    100% {{ transform: translateY(0px); }}
 }}
-@keyframes fadeInUp {{
-    from {{ opacity: 0; transform: translateY(20px); }}
-    to {{ opacity: 1; transform: translateY(0); }}
+@keyframes glow {{
+    from {{ text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }}
+    to {{ text-shadow: 0 0 20px rgba(59, 130, 246, 0.9), 0 0 10px rgba(167, 119, 227, 0.6); }}
 }}
 </style>
-<div style="text-align: center;">
-    <img id="login_logo" src="data:image/avif;base64,{login_logo_b64}" alt="Kawkab AI Logo">
+
+<div style="text-align: center; position: relative; z-index: 10;">
+    <div style="font-size: 4rem; margin-bottom: 10px;">🪐</div>
+    <!-- Fallback emoji if image fails, placed above title -->
     <div class="login_title">Kawkab AI</div>
-    <div class="login_subtitle">بوابة الدخول الموحدة</div>
+    <div class="login_subtitle">بوابة الذكاء الاصطناعي لفصاحة القراءة</div>
 </div>
+<!-- Injecting logo via JS to ensure it loads even with strict CSP if needed -->
+<script>
+    const logoBase64 = "data:image/avif;base64,{login_logo_b64}";
+    const img = document.createElement('img');
+    img.id = 'login_logo';
+    img.src = logoBase64;
+    img.alt = 'Kawkab AI Logo';
+    
+    // Insert image before the title
+    const title = document.querySelector('.login_title');
+    if(title) {{
+        title.parentNode.insertBefore(img, title);
+        // Remove emoji if image loads successfully (optional polish)
+        const emoji = title.previousElementSibling.previousElementSibling;
+        if(emoji && emoji.textContent === '🪐') emoji.style.display = 'none';
+    }}
+</script>
 """
 
 with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=theme, css=custom_css) as demo:
