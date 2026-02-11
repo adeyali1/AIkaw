@@ -3,6 +3,8 @@
 *.ogg
 *.wav
 *.txt
+# Except requirements.txt
+!requirements.txt
 *.log
 *.json
 .gradio/
