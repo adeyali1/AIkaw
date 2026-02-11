@@ -1,0 +1,23 @@
+# Git Ignore for Kawkab AI
+*.mp3
+*.ogg
+*.wav
+*.txt
+*.log
+*.json
+.gradio/
+__pycache__/
+*.avif
+# Except the logo
+!FinallLogo-02.avif
+
+# Exclude binaries and large models
+ffmpeg.exe
+*.pyc
+.venv/
+.env
+
+# Exclude model download logs
+whisperx_run*.txt
+accuracy_test_log*.txt
+active_log*.txt
