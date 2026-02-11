@@ -592,6 +592,17 @@ body { background-color: #f7f9fc; font-family: 'Cairo', sans-serif !important; }
 /* Text & Inputs */
 .prose { font-size: 1.1rem !important; line-height: 1.8 !important; }
 textarea { background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; }
+
+/* Loading Animation */
+.gr-button-primary.generating {
+    background: linear-gradient(135deg, #a777e3, #6e8efb) !important;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(167, 119, 227, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(167, 119, 227, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(167, 119, 227, 0); }
+}
 """
 
 # Gradio Interface - Theme: Soft Blue (Base)
@@ -606,10 +617,66 @@ theme = gr.themes.Soft(
     block_shadow="0 4px 6px -1px rgba(0,0,0,0.05)"
 )
 
-with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=theme) as demo:
+# Prepare Login Page HTML
+login_logo_b64 = ""
+if os.path.exists("logo_b64.txt"):
+    with open("logo_b64.txt", "r") as f:
+        login_logo_b64 = f.read().replace("\n", "")
+
+auth_html = f"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+.gradio-container {{ font-family: 'Cairo', sans-serif !important; background-color: #f7f9fc !important; }}
+#login_logo {{
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 120px;
+    animation: fadeInDown 1s ease-out;
+    mix-blend-mode: multiply;
+}}
+.login_title {{
+    text-align: center;
+    color: #1e3a8a;
+    font-weight: 800;
+    font-size: 2rem;
+    margin-bottom: 5px;
+    animation: fadeInUp 1s ease-out;
+}}
+.login_subtitle {{
+    text-align: center;
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 30px;
+    animation: fadeInUp 1s ease-out 0.3s forwards;
+    opacity: 0;
+}}
+@keyframes fadeInDown {{
+    from {{ opacity: 0; transform: translateY(-20px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
+}}
+@keyframes fadeInUp {{
+    from {{ opacity: 0; transform: translateY(20px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
+}}
+</style>
+<div style="text-align: center;">
+    <img id="login_logo" src="data:image/avif;base64,{login_logo_b64}" alt="Kawkab AI Logo">
+    <div class="login_title">Kawkab AI</div>
+    <div class="login_subtitle">بوابة الدخول الموحدة</div>
+</div>
+"""
+
+with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=theme, css=custom_css) as demo:
     with gr.Column(elem_id="header-container"):
         if os.path.exists("FinallLogo-02.avif"):
-            gr.Image("FinallLogo-02.avif", elem_classes="header-logo", show_label=False, interactive=False, container=False)
+            gr.Image(
+                "FinallLogo-02.avif", 
+                elem_classes="header-logo", 
+                show_label=False, 
+                interactive=False, 
+                container=False, 
+                show_download_button=False
+            )
         gr.Markdown("# Kawkab AI", elem_classes="app-title")
         gr.Markdown("### تقييم فصاحة القراءة بالذكاء الاصطناعي", elem_classes="app-subtitle")
     
@@ -652,10 +719,10 @@ if __name__ == "__main__":
         share=should_share, 
         server_name="0.0.0.0", 
         server_port=7860,
-        css=custom_css,
         show_error=True,
         debug=False,
-        auth=("kat", "Sinan@26")
+        auth=("kat", "Sinan@26"),
+        auth_message=auth_html
     )
     print("====================================")
     print("🚀 KAWKAB AI IS FULLY READY ON VPS!")
