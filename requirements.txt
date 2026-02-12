@@ -1,8 +1,16 @@
-torch
-torchaudio
-transformers
-gradio
-numpy
+
+# Core AI dependencies (Pinned for stability)
+torch>=2.0.0
+torchaudio>=2.0.0
+transformers>=4.30.0
+numpy<2.0.0
+
+# UI
+gradio>=4.0.0
+
+# Audio processing
 scipy
 imageio-ffmpeg
+
+# WhisperX (install from git)
 git+https://github.com/m-bain/whisperx.git
