@@ -455,7 +455,7 @@ def generate_html(analysis, stats):
     accuracy = stats['accuracy']
     html = f"""
     <div style="font-family: 'Arial'; direction: rtl; text-align: right; font-size: 20px; line-height: 2.5; background: #f9f9f9; padding: 20px; border-radius: 10px;">
-        <h3>نتائج التحليل - WhisperX (Large-V3)</h3>
+        <h3>نتائج التحليل</h3>
         <table style="font-size: 16px; margin: 10px 0; border-collapse: collapse; width: 100%;">
             <tr>
                 <td style="padding: 5px 10px;"><strong>الدقة (Accuracy):</strong> {accuracy:.1f}%</td>
@@ -645,7 +645,7 @@ auth_html = f"""
 </div>
 """
 
-with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=theme, css=custom_css) as demo:
+with gr.Blocks(title="Kawkab AI - تقييم تردد القراءة", theme=theme, css=custom_css) as demo:
     with gr.Column(elem_id="header-container"):
         if os.path.exists("FinallLogo-02.avif"):
             gr.Image(
@@ -656,7 +656,7 @@ with gr.Blocks(title="Kawkab AI - تقييم فصاحة القراءة", theme=t
                 container=False
             )
         gr.Markdown("# Kawkab AI", elem_classes="app-title")
-        gr.Markdown("### تقييم فصاحة القراءة بالذكاء الاصطناعي", elem_classes="app-subtitle")
+        gr.Markdown("### تقييم تردد القراءة بالذكاء الاصطناعي", elem_classes="app-subtitle")
     
     with gr.Row():
         with gr.Column(scale=1):
